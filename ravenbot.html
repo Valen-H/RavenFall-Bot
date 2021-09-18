@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<head lang="en">
+	<title>RavenFall Bot Panel</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="author" content="V.H." />
+	<meta name="description" content="A Bot for Ravenfall" />
+	<meta name="keywords" content="RavenFall, Twitch, Bot, Chat" />
+	<meta name="og:image" content="https://www.ravenfall.stream/favicon.png" />
+	<link href="https://www.ravenfall.stream/favicon.png" rel="icon" />
+	<base href="https://www.ravenfall.stream" />
+	<style>
+		* {
+			text-align: center;
+			vertical-align: middle;
+			border-radius: 5px;
+			user-select: text;
+		}
+		input {
+			user-select: contain !important;
+		}
+		input:invalid {
+			border-color: red;
+		}
+		label {
+			display: contents;
+			text-decoration: underline;
+		}
+		label::after {
+			content: ": ";
+		}
+		#body, body {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			padding: 5px;
+			z-index: 0;
+			background-image: radial-gradient(circle farthest-side at center, white 5%, lightgray 50%, gray 100%);
+			background-attachment: fixed;
+			background-origin: border-box;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center;
+			box-sizing: border-box;
+			flex-direction: column;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
+			align-items: center;
+			align-content: space-around;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+		#body * {
+			margin: 3px;
+			padding: 2px;
+		}
+		#channel, #botname, #settings {
+			width: 50%;
+		}
+		#oauth {
+			width: 35%;
+		}
+		#logs {
+			width: 85%;
+			height: 45%;
+			margin: 0 7%;
+			padding: 5px;
+			cursor: ns-resize;
+			box-sizing: border-box;
+			user-select: contain;
+			overflow-y: auto;
+			overflow-x: hidden;
+			text-align: initial;
+			resize: both;
+			border: 2px ridge gray;
+			text-shadow: 1px 1px 1px lightgray;
+		}
+		#title {
+			background-image: linear-gradient(135deg, black 30%, violet);
+			background-size: cover;
+			background-clip: text;
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			cursor: default;
+		}
+		.entry {
+			width: 100%;
+			margin: 3px;
+			display: inline-block;
+			box-sizing: border-box;
+			box-shadow: 1px 1px 1px 1px gray;
+		}
+		input {
+			transition-duration: 200ms;
+		}
+		input[type="checkbox"] {
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+		}
+		input[type="submit"] {
+			transform: scale(120%);
+			cursor: pointer;
+		}
+		input:hover {
+			box-shadow: 1px 1px 1px 1px blueviolet;
+		}
+		input:focus {
+			background-color: gray;
+		}
+		::-webkit-scrollbar {
+			width: 10px;
+			border-radius: 5px;
+		}
+		::-webkit-scrollbar-track {
+			background: lightgray;
+			border-radius: 5px;
+		}
+		::-webkit-scrollbar-thumb {
+			background: gray;
+			border-radius: 5px;
+		}
+	</style>
+	<script src="https://unpkg.com/twitch-js/dist/twitch.js"></script>
+	<script>
+		//https://twitch-js.netlify.app/
+		let	channel,	username,	oauth,
+			botnames,	commit,		logs,
+			bot,		dun,		raid,
+			settings,
+			t,			chc = { };
+		
+		const	url	= new URL(location.href);
+		
+		function _log(room, action, ...text) {
+			let a = "";
+			
+			const	nen			= document.createElement("p"),
+					inen		= document.createElement("span");
+			
+			nen.title = Date();
+			
+			if (room) {
+				const	rom		= document.createElement("span");
+				
+				rom.textContent			= room + ": ";
+				rom.style.fontWeight	= "bold";
+				nen.style.color			= chc[room];
+				
+				nen.appendChild(rom);
+			}
+			if (action) {
+				const	act		= document.createElement("span");
+				
+				act.textContent			= ' ' + action + ' ';
+				act.style.fontWeight	= "bold";
+				
+				nen.appendChild(act);
+			}
+			
+			inen.innerHTML		= (a = (text.join(' ')
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/__(.*?)__/g, "<u>$1</u>")
+				.replace(/\*{2}(.*?)\*{2}/g, "<b>$1</b>")
+				.replace(/\*(.*?)\*/g, "<i>$1</i>")
+			));
+			nen.classList.add("entry");
+			if (a) nen.appendChild(inen);
+			
+			if (logs) {
+				logs.prepend(document.createElement("br"));
+				logs.prepend(nen);
+			}
+			
+			return a;
+		} //_log
+		
+		function _commit() {
+			if (!(channel && username && oauth)) {
+				_log(null, "Error", "Please Refresh");
+				location.reload();
+				return false;
+			}
+			
+			const	chs		= channel.value.split(',').map(v => v.trim()).filter(v => v).map(v => v.toLowerCase());
+			let		names	= botnames.value.split(',').map(v => v.trim()).filter(v => v),
+					setting	= settings.value.split(',').map(v => v.trim()).filter(v => v).map(v => v.toUpperCase()),
+					name;
+			
+			localStorage.setItem("tT_channel", channel.value);
+			localStorage.setItem("tT_botnames", botnames.value);
+			localStorage.setItem("tT_username", username.value);
+			sessionStorage.setItem("tT_oauth", oauth.value);
+			localStorage.setItem("tT_settings", settings.value);
+			
+			{
+				let	last	= setting[0] || "DR";
+				
+				setting		= setting.map(n => {
+					if (!n) return last;
+					else return last = n;
+				});
+				
+				while (setting.length < chs.length) setting.push(last);
+			}
+			{
+				let	last	= names[0] || "ravenbot";
+				
+				names		= names.map(n => {
+					if (!n) return last;
+					else return last = n;
+				});
+				
+				while (names.length < chs.length) names.push(last);
+			}
+			
+			if (t) t.chat.disconnect();
+			
+			t = new TwitchJs({
+				token:						oauth.value.replace(/^oauth:/, ''),
+				username:					name = username.value.replace(/^@/, ''),
+				onAuthenticationFailure:	function onAuthenticationFailure(err) {
+					return _log(null, "Error", "Bad Login", err);
+				},
+			});
+			t.chat.connect().then(user => {
+				_log(null, "Connected");
+				
+				chs.forEach((ch, i) => {
+					t.chat.join(ch).then(state => {
+						_log(null, "Joined", `<${state.roomState.roomId}${'#' + ch}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
+						
+						const	chn	= '#' + ch,
+								clr	= [100, 100, 100],
+								c	= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')';
+						
+						let a;
+						
+						chc[chn] = c;
+						
+						t.chat.on(chn, message => {
+							if (!message.message) return false;
+							
+							if (message.username == names[i] && message.message) {
+								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
+									setTimeout(() => {
+										t.chat.say(chn, "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [in ${chn} after ${a}]`));
+									}, a = 10000 + Math.round(Math.random() * 10000));
+									
+									_log(chn, "Received", `${message.message}  [in ${chn}, sends after ${a}]`);
+								} else if (bot.checked && raid.checked && setting[i].includes('R') && /help fight him by typing !raid/i.test(message.message)) {
+									setTimeout(() => {
+										t.chat.say(chn, "!raid").then(() => _log(chn, "Sent", `'!raid'  [in ${chn} after ${a}]`));
+									}, a = 10000 + Math.round(Math.random() * 10000));
+									
+									_log(chn, "Received", `${message.message}  [in ${chn}, sends after ${a}]`);
+								} else if (message.message.includes(name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+							} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+						});
+					});
+				});
+			});
+		} //_commit
+		
+		window.addEventListener("DOMContentLoaded", () => {
+			console.info("Loaded.");
+			
+			channel		= document.getElementById("channel");
+			username	= document.getElementById("username");
+			botnames	= document.getElementById("botname");
+			oauth		= document.getElementById("oauth");
+			commit		= document.getElementById("commit");
+			logs		= document.getElementById("logs");
+			bot			= document.getElementById("b_enabled");
+			dun			= document.getElementById("dun_enabled");
+			settings	= document.getElementById("settings");
+			raid		= document.getElementById("raid_enabled");
+			
+			commit.onclick		= _commit;
+			
+			channel.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
+			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "ravenbot";
+			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
+			oauth.value			= url.searchParams.get("oauth") || sessionStorage.getItem("tT_oauth");
+			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DR";
+			
+			bot.checked			= url.searchParams.has("bot") ? true : true;
+			dun.checked			= url.searchParams.has("dun") ? true : true;
+			raid.checked		= url.searchParams.has("raid") ? true : true;
+			
+			if (url.searchParams.has("start")) commit.click();
+			
+			_log(null, null, "\nHit '__Submit__' to Login and Start.");
+			logs.prepend(document.createElement("hr"));
+		});
+	</script>
+</head>
+<body>
+	<main id="body">
+		<h1 id="title">RavenBot</h1>
+		<fieldset>
+			<legend>Authorization</legend>
+			<label for="username">Username</label>
+			<input type="text" id="username" title="You Account Username" placeholder="Your Username" minlength="1" tabindex="1" autocomplete="nickname" required />
+			<br />
+			<a href="https://twitchapps.com/tmi/" target="_blank"><label for="oauth">OAuth</label></a>
+			<input type="password" id="oauth" title="https://twitchapps.com/tmi/" placeholder="OAuth Token" minlength="5" tabindex="2" autocomplete="additional-name" required />
+		</fieldset>
+		<fieldset>
+			<legend>Settings</legend>
+			<label for="channel">Channel(s)</label>
+			<input type="text" id="channel" title="Separate with Commas" placeholder="Channel Names" minlength="1" tabindex="3" autocomplete="username" autofocus />
+			<br />
+			<label for="botname">Bot Name(s)</label>
+			<input type="text" id="botname" title="Separate with Commas (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
+			<br />
+			<label for="settings">Per-Channel Settings</label>
+			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" placeholder="DR  [= Dungeons enabled + Raids enabled]" minlength="1" tabindex="5" autocomplete="language" />
+		</fieldset>
+		<input type="submit" id="commit" title="Login and get Ready" tabindex="6" />
+		<br />
+		<label for="b_enabled">Bot Enabled</label>
+		<input type="checkbox" id="b_enabled" title="Enable Bot Actions." tabindex="7" checked />
+		<label for="dun_enabled">Dungeons Enabled</label>
+		<input type="checkbox" id="dun_enabled" title="Enable Dungeon Actions." tabindex="8" checked />
+		<label for="raid_enabled">Raids Enabled</label>
+		<input type="checkbox" id="raid_enabled" title="Enable Raid Actions." tabindex="9" checked />
+		<br />
+		<div id="logs"></div>
+	</main>
+</body>
