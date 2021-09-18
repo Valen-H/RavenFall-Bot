@@ -132,7 +132,7 @@
 		let	channel,	username,	oauth,
 			botnames,	commit,		logs,
 			bot,		dun,		raid,
-			settings,
+			settings,	join,
 			t,			chc = { };
 		
 		const	url	= new URL(location.href);
@@ -210,7 +210,7 @@
 				while (setting.length < chs.length) setting.push(last);
 			}
 			{
-				let	last	= names[0] || "ravenbot";
+				let	last	= names[0] || "RavenfallOfficial";
 				
 				names		= names.map(n => {
 					if (!n) return last;
@@ -224,11 +224,15 @@
 			
 			t = new TwitchJs({
 				token:						oauth.value.replace(/^oauth:/, ''),
-				username:					name = username.value.replace(/^@/, ''),
+				username:					name = username.value.replace(/^@/, '').toLowerCase(),
 				onAuthenticationFailure:	function onAuthenticationFailure(err) {
 					return _log(null, "Error", "Bad Login", err);
 				},
 			});
+			
+			const	joineed	= new RegExp(name + ", You are not currently playing. Use !join to start playing", "i");
+			let		last;
+			
 			t.chat.connect().then(user => {
 				_log(null, "Connected");
 				
@@ -250,16 +254,26 @@
 							if (message.username == names[i] && message.message) {
 								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
 									setTimeout(() => {
-										t.chat.say(chn, "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [in ${chn} after ${a}]`));
+										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
 									}, a = 10000 + Math.round(Math.random() * 10000));
 									
-									_log(chn, "Received", `${message.message}  [in ${chn}, sends after ${a}]`);
+									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (bot.checked && raid.checked && setting[i].includes('R') && /help fight him by typing !raid/i.test(message.message)) {
 									setTimeout(() => {
-										t.chat.say(chn, "!raid").then(() => _log(chn, "Sent", `'!raid'  [in ${chn} after ${a}]`));
+										t.chat.say(chn, last = "!raid").then(() => _log(chn, "Sent", `'!raid'  [after ${a}]`));
 									}, a = 10000 + Math.round(Math.random() * 10000));
 									
-									_log(chn, "Received", `${message.message}  [in ${chn}, sends after ${a}]`);
+									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
+								} else if (bot.enabled && join.enabled && setting[i].includes('J') && joineed.test(message.message)) {
+									setTimeout(() => {
+										t.chat.say(chn, "!join").then(() => _log(chn, "Sent", `'!join'  [after ${a}]`));
+										
+										setTimeout(() => {
+											t.chat.say(chn, last).then(() => _log(chn, "Sent", `'${last}'  [after ${a}]`));
+										}, a = 10000 + Math.round(Math.random() * 10000));
+									}, a = 10000 + Math.round(Math.random() * 10000));
+									
+									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (message.message.includes(name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 							} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
@@ -280,19 +294,21 @@
 			bot			= document.getElementById("b_enabled");
 			dun			= document.getElementById("dun_enabled");
 			settings	= document.getElementById("settings");
+			join		= document.getElementById("join_enabled");
 			raid		= document.getElementById("raid_enabled");
 			
 			commit.onclick		= _commit;
 			
 			channel.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
-			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "ravenbot";
+			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "RavenfallOfficial";
 			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
 			oauth.value			= url.searchParams.get("oauth") || sessionStorage.getItem("tT_oauth");
-			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DR";
+			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ";
 			
 			bot.checked			= url.searchParams.has("bot") ? true : true;
 			dun.checked			= url.searchParams.has("dun") ? true : true;
 			raid.checked		= url.searchParams.has("raid") ? true : true;
+			join.checked		= url.searchParams.has("join") ? true : true;
 			
 			if (url.searchParams.has("start")) commit.click();
 			
@@ -321,16 +337,18 @@
 			<input type="text" id="botname" title="Separate with Commas (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
 			<br />
 			<label for="settings">Per-Channel Settings</label>
-			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" placeholder="DR  [= Dungeons enabled + Raids enabled]" minlength="1" tabindex="5" autocomplete="language" />
+			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" placeholder="DRJ  [= Dungeons enabled + Raids enabled + AutoJoin Enabled]" minlength="1" tabindex="5" autocomplete="language" />
 		</fieldset>
 		<input type="submit" id="commit" title="Login and get Ready" tabindex="6" />
 		<br />
 		<label for="b_enabled">Bot Enabled</label>
 		<input type="checkbox" id="b_enabled" title="Enable Bot Actions." tabindex="7" checked />
+		<label for="join_enabled">AutoJoin Enabled</label>
+		<input type="checkbox" id="join_enabled" title="Enable Channel Joining." tabindex="8" checked />
 		<label for="dun_enabled">Dungeons Enabled</label>
-		<input type="checkbox" id="dun_enabled" title="Enable Dungeon Actions." tabindex="8" checked />
+		<input type="checkbox" id="dun_enabled" title="Enable Dungeon Actions." tabindex="9" checked />
 		<label for="raid_enabled">Raids Enabled</label>
-		<input type="checkbox" id="raid_enabled" title="Enable Raid Actions." tabindex="9" checked />
+		<input type="checkbox" id="raid_enabled" title="Enable Raid Actions." tabindex="10" checked />
 		<br />
 		<div id="logs"></div>
 	</main>
