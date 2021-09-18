@@ -188,10 +188,10 @@
 				return false;
 			}
 			
-			const	chs		= channel.value.split(',').map(v => v.trim()).filter(v => v).map(v => v.toLowerCase());
-			let		names	= botnames.value.split(',').map(v => v.trim()),
-					setting	= settings.value.split(',').map(v => v.trim()).map(v => v.toUpperCase()),
-					name;
+			let	chs		= channel.value.split(',').filter(v => v).map(v => v.trim().toLowerCase()),
+				names	= botnames.value.split(',').map(v => v.trim().toLowerCase()),
+				setting	= settings.value.split(',').map(v => v.trim().toUpperCase()),
+				name;
 			
 			localStorage.setItem("tT_channel", channel.value);
 			localStorage.setItem("tT_botnames", botnames.value);
@@ -230,8 +230,10 @@
 				},
 			});
 			
-			const	joineed	= new RegExp(name + ", You are not currently playing. Use !join to start playing", "i");
+			const	joineed	= new RegExp(name + ", You are not currently playing. Use !join to start playing!?", "i");
 			let		last;
+			
+			console.debug(names, setting, chs, joineed);
 			
 			t.chat.connect().then(user => {
 				_log(null, "Connected");
@@ -251,7 +253,7 @@
 						t.chat.on(chn, message => {
 							if (!message.message) return false;
 							
-							if (message.username == names[i] && message.message) {
+							if (message.username.toLowerCase() == names[i]) {
 								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
@@ -264,7 +266,7 @@
 									}, a = 10000 + Math.round(Math.random() * 10000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (bot.enabled && join.enabled && setting[i].includes('J') && joineed.test(message.message)) {
+								} else if (bot.enabled && join.checked && setting[i].includes('J') && joineed.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, "!join").then(() => _log(chn, "Sent", `'!join'  [after ${a}]`));
 										
