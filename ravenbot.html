@@ -257,23 +257,25 @@
 								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
-									}, a = 10000 + Math.round(Math.random() * 10000));
+									}, a = 9000 + Math.round(Math.random() * 9000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (bot.checked && raid.checked && setting[i].includes('R') && /help fight him by typing !raid/i.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, last = "!raid").then(() => _log(chn, "Sent", `'!raid'  [after ${a}]`));
-									}, a = 10000 + Math.round(Math.random() * 10000));
+									}, a = 9000 + Math.round(Math.random() * 9000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (bot.checked && join.checked && setting[i].includes('J') && joineed.test(message.message)) {
+								} else if (bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, "!join").then(() => _log(chn, "Sent", `'!join'  [after ${a}]`));
 										
 										setTimeout(() => {
 											t.chat.say(chn, last).then(() => _log(chn, "Sent", `'${last}'  [after ${a}]`));
-										}, a = 10000 + Math.round(Math.random() * 10000));
-									}, a = 10000 + Math.round(Math.random() * 10000));
+										}, a = 9000 + Math.round(Math.random() * 9000));
+										
+										_log(chn, "Retrying", `'${last}'  [replies after ${a}]`);
+									}, a = 9000 + Math.round(Math.random() * 9000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (message.message.includes(name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
