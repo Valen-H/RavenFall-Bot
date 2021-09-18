@@ -266,7 +266,7 @@
 									}, a = 10000 + Math.round(Math.random() * 10000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (bot.enabled && join.checked && setting[i].includes('J') && joineed.test(message.message)) {
+								} else if (bot.checked && join.checked && setting[i].includes('J') && joineed.test(message.message)) {
 									setTimeout(() => {
 										t.chat.say(chn, "!join").then(() => _log(chn, "Sent", `'!join'  [after ${a}]`));
 										
