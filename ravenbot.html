@@ -189,8 +189,8 @@
 			}
 			
 			const	chs		= channel.value.split(',').map(v => v.trim()).filter(v => v).map(v => v.toLowerCase());
-			let		names	= botnames.value.split(',').map(v => v.trim()).filter(v => v),
-					setting	= settings.value.split(',').map(v => v.trim()).filter(v => v).map(v => v.toUpperCase()),
+			let		names	= botnames.value.split(',').map(v => v.trim()),
+					setting	= settings.value.split(',').map(v => v.trim()).map(v => v.toUpperCase()),
 					name;
 			
 			localStorage.setItem("tT_channel", channel.value);
