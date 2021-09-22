@@ -191,7 +191,7 @@
 			let	chs		= channel.value.split(',').filter(v => v).map(v => v.trim().toLowerCase()),
 				names	= botnames.value.split(',').map(v => v.trim().toLowerCase()),
 				setting	= settings.value.split(',').map(v => v.trim().toUpperCase()),
-				name;
+				name, ocnt = 0;
 			
 			localStorage.setItem("tT_channel", channel.value);
 			localStorage.setItem("tT_botnames", botnames.value);
@@ -226,6 +226,7 @@
 				token:						oauth.value.replace(/^oauth:/, ''),
 				username:					name = username.value.replace(/^@/, '').toLowerCase(),
 				onAuthenticationFailure:	function onAuthenticationFailure(err) {
+					if (ocnt++ >= 4) commit();
 					return _log(null, "Error", "Bad Login", err);
 				},
 			});
