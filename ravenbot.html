@@ -55,10 +55,6 @@
 			overflow-x: hidden;
 			overflow-y: auto;
 		}
-		#body * {
-			margin: 3px;
-			padding: 2px;
-		}
 		#channel, #botname, #settings {
 			width: 50%;
 		}
@@ -75,7 +71,7 @@
 			user-select: contain;
 			overflow-y: auto;
 			overflow-x: hidden;
-			text-align: initial;
+			text-align: center;
 			resize: both;
 			border: 2px ridge gray;
 			text-shadow: 1px 1px 1px lightgray;
@@ -94,6 +90,20 @@
 			display: inline-block;
 			box-sizing: border-box;
 			box-shadow: 1px 1px 1px 1px gray;
+			clear: both;
+		}
+		.entrychan {
+			margin: auto auto auto 5px;
+			float: left;
+		}
+		.entrybod {
+			margin: auto 5px auto auto;
+			float: right;
+		}
+		.entryact {
+			margin: auto auto auto 5px;
+			display: inline-block;
+			float: left;
 		}
 		input {
 			transition-duration: 200ms;
@@ -148,8 +158,9 @@
 			if (room) {
 				const	rom		= document.createElement("span");
 				
-				rom.textContent			= room + ": ";
+				rom.textContent			= room + ":\t";
 				rom.style.fontWeight	= "bold";
+				rom.classList.add("entrychan");
 				nen.style.color			= chc[room];
 				
 				nen.appendChild(rom);
@@ -159,6 +170,7 @@
 				
 				act.textContent			= ' ' + action + ' ';
 				act.style.fontWeight	= "bold";
+				act.classList.add("entryact");
 				
 				nen.appendChild(act);
 			}
@@ -170,6 +182,7 @@
 				.replace(/\*{2}(.*?)\*{2}/g, "<b>$1</b>")
 				.replace(/\*(.*?)\*/g, "<i>$1</i>")
 			));
+			inen.classList.add("entrybod");
 			nen.classList.add("entry");
 			if (a) nen.appendChild(inen);
 			
@@ -290,6 +303,18 @@
 				});
 			});
 		} //_commit
+		
+		function register(channel, botname) {
+			const	container	= document.createElement("div"),
+					chan		= document.createElement("input"),
+					botn		= document.createElement("input");
+			
+			chan.setAttribute("disabled");
+			
+			container.append(chan, botn);
+			
+			return container;
+		} //register
 		
 		function xtrctp(string, key) {
 			return (string.match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0];
