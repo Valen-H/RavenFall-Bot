@@ -40,7 +40,7 @@
 			margin: 0;
 			padding: 5px;
 			z-index: 0;
-			background-image: radial-gradient(circle farthest-side at center, white 5%, lightgray 50%, gray 100%);
+			background-image: radial-gradient(circle farthest-side at center, white 5%, lightgray 40%, gray 90%);
 			background-attachment: fixed;
 			background-origin: border-box;
 			background-repeat: no-repeat;
@@ -95,15 +95,18 @@
 		.entrychan {
 			margin: auto auto auto 5px;
 			float: left;
+			min-width: 20%;
 		}
 		.entrybod {
 			margin: auto 5px auto auto;
+			text-align: left;
 			float: right;
+			min-width: 20%;
 		}
 		.entryact {
 			margin: auto auto auto 5px;
-			display: inline-block;
-			float: left;
+			float: inline-start;
+			min-width: 20%;
 		}
 		input {
 			transition-duration: 200ms;
@@ -139,7 +142,7 @@
 	<script src="https://unpkg.com/twitch-js/dist/twitch.js"></script>
 	<script>
 		//https://twitch-js.netlify.app/
-		let	channel,	username,	oauth,
+		let	channels,	username,	oauth,
 			botnames,	commit,		logs,
 			bot,		dun,		raid,
 			settings,	join,
@@ -162,6 +165,13 @@
 				rom.style.fontWeight	= "bold";
 				rom.classList.add("entrychan");
 				nen.style.color			= chc[room];
+				
+				nen.appendChild(rom);
+			} else {
+				const	rom		= document.createElement("span");
+				
+				rom.style.fontWeight	= "bold";
+				rom.classList.add("entrychan");
 				
 				nen.appendChild(rom);
 			}
@@ -195,43 +205,24 @@
 		} //_log
 		
 		function _commit() {
-			if (!(channel && username && oauth)) {
+			if (!(channels && botnames && username && oauth)) {
 				_log(null, "Error", "Please Refresh");
 				location.reload();
 				return false;
 			}
 			
-			let	chs		= channel.value.split(',').filter(v => v).map(v => v.trim().toLowerCase()),
-				names	= botnames.value.split(',').map(v => v.trim().toLowerCase()),
-				setting	= settings.value.split(',').map(v => v.trim().toUpperCase()),
-				name, ocnt = 0;
+			const	chs		= parseChannel(),
+					names	= parseBotnames(botnames.value, chs),
+					setting	= parseSettings(settings.value, chs);
+			let		name, ocnt = 0;
 			
-			localStorage.setItem("tT_channel", channel.value);
+			localStorage.setItem("tT_channel", channels.value);
 			localStorage.setItem("tT_botnames", botnames.value);
 			localStorage.setItem("tT_username", username.value);
-			sessionStorage.setItem("tT_oauth", oauth.value);
+			localStorage.setItem("tT_oauth", oauth.value);
 			localStorage.setItem("tT_settings", settings.value);
 			
-			{
-				let	last	= setting[0] || "DR";
-				
-				setting		= setting.map(n => {
-					if (!n) return last;
-					else return last = n;
-				});
-				
-				while (setting.length < chs.length) setting.push(last);
-			}
-			{
-				let	last	= names[0] || "RavenfallOfficial";
-				
-				names		= names.map(n => {
-					if (!n) return last;
-					else return last = n;
-				});
-				
-				while (names.length < chs.length) names.push(last);
-			}
+			refresh();
 			
 			if (t) t.chat.disconnect();
 			
@@ -239,53 +230,60 @@
 				token:						oauth.value.replace(/^oauth:/, ''),
 				username:					name = username.value.replace(/^@/, '').toLowerCase(),
 				onAuthenticationFailure:	function onAuthenticationFailure(err) {
-					if (ocnt++ >= 4) commit();
+					if (ocnt++ >= 3) commit();
 					return _log(null, "Error", "Bad Login", err);
 				},
 			});
 			
 			const	joineed	= new RegExp(name + ", You are not currently playing. Use !join to start playing!?", "i");
-			let		last;
-			
-			console.debug(names, setting, chs, joineed);
 			
 			t.chat.connect().then(user => {
 				_log(null, "Connected");
 				
 				chs.forEach((ch, i) => {
 					t.chat.join(ch).then(state => {
-						_log(null, "Joined", `<${state.roomState.roomId}${'#' + ch}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
+						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
 						
 						const	chn	= '#' + ch,
 								clr	= [100, 100, 100],
 								c	= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')';
 						
-						let a;
+						let a, last;
 						
 						chc[chn] = c;
 						
 						t.chat.on(chn, message => {
 							if (!message.message) return false;
 							
-							if (message.username.toLowerCase() == names[i]) {
+							message.message = message.message.trim();
+							
+							if (message.username.trim().toLowerCase() == names[i]) {
 								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
+									//DUNGEONS
+									
 									setTimeout(() => {
 										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (bot.checked && raid.checked && setting[i].includes('R') && /help fight him by typing !raid/i.test(message.message)) {
+									//RAIDS
+									
 									setTimeout(() => {
 										t.chat.say(chn, last = "!raid").then(() => _log(chn, "Sent", `'!raid'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
 								} else if (bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
+									//JOINS
+									
 									const	sh	= xtrctp(setting[i], 'J');
 									
 									setTimeout(() => {
 										t.chat.say(chn, sh ? `!join ${sh}` : "!join").then(() => {
 											_log(chn, "Sent", sh ? `!join ${sh}` : "!join", ` [after ${a}]`);
+											
+											//Repeat Failure
 											
 											setTimeout(() => {
 												t.chat.say(chn, last).then(() => _log(chn, "Sent", `'${last}'  [after ${a}]`));
@@ -304,16 +302,78 @@
 			});
 		} //_commit
 		
+		/**
+		 * Clean Duplicates from Arrays.
+		 */
+		function filterE(arr) {
+			const met = { };
+			
+			return arr.filter(prop => {
+				if (met[prop]) return false;
+				else 
+					return (met[prop] = true);
+			});
+		} //filterE
+		
+		function parseChannel(from = channels ? channels.value : "", splitr = ',') {
+			return filterE(from.split(splitr).filter(v => v).map(v => v.trim().toLowerCase()));
+		} //parseChannel
+		function parseBotnames(from = botnames ? botnames.value : "", supply, splitr = ',') {
+			const nec	= supply || parseChannel();
+			let actv	= null;
+			
+			from = from.split(splitr).map(name => {
+				if (!actv) actv = (name || "RavenfallOfficial").trim().toLowerCase();
+				if (!name) return actv;
+				else
+					return (actv = name.trim().toLowerCase());
+			});
+			
+			while (from.length < nec.length) from.push(actv);
+			
+			return from;
+		} //parseBotnames
+		function parseSettings(from = settings ? settings.value : "", supply, splitr = ',') {
+			const nec	= supply || parseChannel();
+			let actv	= null;
+			
+			from = from.split(splitr).map(name => {
+				if (!actv) actv = name || "DRJ";
+				if (!name) return actv;
+				else
+					return (actv = name);
+			});
+			
+			while (from.length < nec.length) from.push(actv);
+			
+			return from;
+		} //parseSettings
+		
+		function refresh(chans = channels ? channels.value : "", botns = botnames ? botnames.value : "", sets = settings ? settings.value : "", splitr = ',') {
+			chans	= parseChannel();
+			botns	= parseBotnames(botns, chans);
+			
+			for (let i = 0; i < chans.length; i++)
+				register(chans[i], botns[i]);
+		} //refresh
+		
 		function register(channel, botname) {
 			const	container	= document.createElement("div"),
-					chan		= document.createElement("input"),
-					botn		= document.createElement("input");
+			chan		= document.createElement("input"),
+			botn		= document.createElement("input");
 			
-			chan.setAttribute("disabled");
+			chan.setAttribute("disabled", "");
+			chan.setAttribute("required", "");
+			botn.setAttribute("required", "");
+			
+			chan.value			= channel;
+			chan.placeholder	= "Channel";
+			botn.placeholder	= botn.value = botname;
 			
 			container.append(chan, botn);
+			console.debug("RENDER", channel, botname, container);
 			
-			return container;
+			return { container, chan, botn };
 		} //register
 		
 		function xtrctp(string, key) {
@@ -323,7 +383,7 @@
 		window.addEventListener("DOMContentLoaded", () => {
 			console.info("Loaded.");
 			
-			channel		= document.getElementById("channel");
+			channels		= document.getElementById("channel");
 			username	= document.getElementById("username");
 			botnames	= document.getElementById("botname");
 			oauth		= document.getElementById("oauth");
@@ -337,10 +397,10 @@
 			
 			commit.onclick		= _commit;
 			
-			channel.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
+			channels.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
 			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "RavenfallOfficial";
 			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
-			oauth.value			= url.searchParams.get("oauth") || sessionStorage.getItem("tT_oauth");
+			oauth.value			= url.searchParams.get("oauth") || localStorage.getItem("tT_oauth");
 			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ";
 			
 			bot.checked			= url.searchParams.has("bot") ? true : true;
