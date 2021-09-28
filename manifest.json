@@ -1,0 +1,26 @@
+{
+  "short_name": "Ravenbot",
+  "name": "RavenFall bot",
+  "icons": [
+    {
+      "src": "https://www.ravenfall.stream/favicon.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/ravenbot.html",
+  "background_color": "#333333",
+  "display": "minimal-ui",
+  "scope": "/",
+  "theme_color": "#333333",
+  "shortcuts": [
+    {
+      "name": "RavenFall bot",
+      "short_name": "Ravenbot",
+      "description": "Launch bot",
+      "url": "/ravenbot.html",
+      "icons": [{ "src": "https://www.ravenfall.stream/favicon.png", "type": "image/png" }]
+    }
+  ],
+  "description": "A bot for Ravenfall - Twitch",
+  "screenshots": []
+}
