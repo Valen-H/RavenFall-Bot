@@ -4,7 +4,13 @@
   "icons": [
     {
       "src": "https://www.ravenfall.stream/favicon.png",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://www.ravenfall.stream/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": "/ravenbot.html",
