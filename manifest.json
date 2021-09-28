@@ -13,17 +13,17 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/ravenbot.html",
+  "start_url": "ravenbot.html",
   "background_color": "#333333",
   "display": "minimal-ui",
-  "scope": "/",
+  "scope": "/RavenFall-Bot/",
   "theme_color": "#333333",
   "shortcuts": [
     {
       "name": "RavenFall bot",
       "short_name": "Ravenbot",
       "description": "Launch bot",
-      "url": "/ravenbot.html",
+      "url": "ravenbot.html",
       "icons": [{ "src": "https://www.ravenfall.stream/favicon.png", "type": "image/png" }]
     }
   ],
