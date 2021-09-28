@@ -213,14 +213,16 @@
 			
 			const	chs		= parseChannel(),
 					names	= parseBotnames(botnames.value, chs),
-					setting	= parseSettings(settings.value, chs);
+					setting	= parseSettings(settings.value, chs),
+					oa		= encrypt(oauth.value);
 			let		name, ocnt = 0;
 			
 			localStorage.setItem("tT_channel", channels.value);
 			localStorage.setItem("tT_botnames", botnames.value);
 			localStorage.setItem("tT_username", username.value);
-			localStorage.setItem("tT_oauth", oauth.value);
+			localStorage.setItem("tT_oauth", oa[0]);
 			localStorage.setItem("tT_settings", settings.value);
+			localStorage.setItem("Tt_enckey", oa[2]);
 			
 			refresh();
 			
@@ -380,6 +382,43 @@
 			return (string.match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0];
 		} //xtrctp
 		
+		function encrypt(key = oauth ? oauth.value : "", by = localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF)) {
+			const	k1 = Math.round(Math.random() * 0xFFFF),
+					k2 = Number(by) || Math.round(Math.random() * 0xFFFF);
+			
+			let		stp = btoa(unescape(encodeURIComponent(key))).split('');
+			
+			stp = stp.map(s => {
+				let	val = (s.charCodeAt(0) + k1 * 2 - k2) % 0xFFFF;
+				
+				while (val < 0) val += 0xFFFF;
+				
+				return String.fromCharCode(val);
+			});
+			stp.unshift(String.fromCharCode(k1));
+			
+			return [ stp.join(''), k1, k2 ];
+		} //encrypt
+		function decrypt(key = oauth ? oauth.value : "", by = localStorage.getItem("Tt_enckey")) {
+			if (!key) return [ key, -1, by ];
+			if (!by) throw "Bad Decryption";
+			
+			const	k1 = key.charCodeAt(0),
+					k2 = Number(by);
+			
+			let		str = key.slice(1).split('');
+			
+			str = decodeURIComponent(escape(atob(str.map(s => {
+				let val = (s.charCodeAt(0) - k1 * 2 + k2) % 0xFFFF;
+				
+				while (val < 0) val += 0xFFFF;
+				
+				return String.fromCharCode(val);
+			}).join(''))));
+			
+			return [ str, k1, k2 ];
+		} //decrypt
+		
 		window.addEventListener("DOMContentLoaded", () => {
 			console.info("Loaded.");
 			
@@ -397,10 +436,11 @@
 			
 			commit.onclick		= _commit;
 			
+			localStorage.setItem("Tt_enckey", localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF));
 			channels.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
 			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "RavenfallOfficial";
 			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
-			oauth.value			= url.searchParams.get("oauth") || localStorage.getItem("tT_oauth");
+			oauth.value			= url.searchParams.get("oauth") || decrypt(localStorage.getItem("tT_oauth") || "")[0];
 			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ";
 			
 			bot.checked			= url.searchParams.has("bot") ? true : true;
