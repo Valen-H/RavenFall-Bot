@@ -464,21 +464,21 @@
 		<fieldset>
 			<legend>Authorization</legend>
 			<label for="username">Username</label>
-			<input type="text" id="username" title="You Account Username" placeholder="Your Username" minlength="1" tabindex="1" autocomplete="nickname" required />
+			<input type="text" id="username" title="You Account Username" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Your Username" minlength="1" tabindex="1" autocomplete="nickname" required />
 			<br />
 			<a href="https://twitchapps.com/tmi/" target="_blank"><label for="oauth">OAuth</label></a>
-			<input type="password" id="oauth" title="https://twitchapps.com/tmi/" placeholder="OAuth Token" minlength="5" tabindex="2" autocomplete="additional-name" required />
+			<input type="password" id="oauth" title="https://twitchapps.com/tmi/" pattern="[a-zA-Z0-9]+" placeholder="OAuth Token" minlength="5" tabindex="2" autocomplete="additional-name" required />
 		</fieldset>
 		<fieldset>
 			<legend>Settings</legend>
 			<label for="channel">Channel(s)</label>
-			<input type="text" id="channel" title="Separate with Commas" placeholder="Channel Names" minlength="1" tabindex="3" autocomplete="username" autofocus />
+			<input type="text" id="channel" title="Separate with Commas" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Channel Names" minlength="1" tabindex="3" autocomplete="username" autofocus />
 			<br />
 			<label for="botname">Bot Name(s)</label>
-			<input type="text" id="botname" title="Separate with Commas (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
+			<input type="text" id="botname" title="Separate with Commas (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
 			<br />
 			<label for="settings">Per-Channel Settings</label>
-			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" placeholder="DRJ  [= Dungeons enabled + Raids enabled + AutoJoin Enabled]" minlength="1" tabindex="5" autocomplete="language" />
+			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" pattern="[A-Z0-9\(\),]+" placeholder="DRJ  [= Dungeons enabled + Raids enabled + AutoJoin Enabled]" minlength="1" tabindex="5" autocomplete="language" />
 		</fieldset>
 		<input type="submit" id="commit" title="Login and get Ready" tabindex="6" />
 		<br />
