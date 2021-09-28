@@ -3,12 +3,12 @@
   "name": "RavenFall bot",
   "icons": [
     {
-      "src": "https://www.ravenfall.stream/favicon.png",
+      "src": "raven192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://www.ravenfall.stream/favicon.png",
+      "src": "raven512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
