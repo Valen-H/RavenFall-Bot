@@ -25,6 +25,7 @@
 		label {
 			display: contents;
 			text-decoration: underline;
+			float: left;
 		}
 		label::after {
 			content: ": ";
@@ -77,7 +78,9 @@
 			text-shadow: 1px 1px 1px lightgray;
 		}
 		#title {
+			filter: drop-shadow(1px 1px 0 blueviolet);
 			background-image: linear-gradient(135deg, black 30%, violet);
+			background-color: gray;
 			background-size: cover;
 			background-clip: text;
 			-webkit-background-clip: text;
@@ -247,7 +250,7 @@
 						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
 						
 						const	chn	= '#' + ch,
-								clr	= [100, 100, 100],
+								clr	= [130, 130, 130],
 								c	= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')';
 						
 						let a, last;
@@ -352,14 +355,14 @@
 		} //parseSettings
 		
 		function refresh(chans = channels ? channels.value : "", botns = botnames ? botnames.value : "", sets = settings ? settings.value : "", splitr = ',') {
-			chans	= parseChannel();
+			/*chans	= parseChannel();
 			botns	= parseBotnames(botns, chans);
 			
 			for (let i = 0; i < chans.length; i++)
-				register(chans[i], botns[i]);
+				register(chans[i], botns[i]);*/
 		} //refresh
 		
-		function register(channel, botname) {
+		/*function register(channel, botname) {
 			const	container	= document.createElement("div"),
 			chan		= document.createElement("input"),
 			botn		= document.createElement("input");
@@ -376,7 +379,7 @@
 			console.debug("RENDER", channel, botname, container);
 			
 			return { container, chan, botn };
-		} //register
+		} //register*/
 		
 		function xtrctp(string, key) {
 			return (string.match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0];
@@ -441,7 +444,7 @@
 			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "RavenfallOfficial";
 			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
 			oauth.value			= url.searchParams.get("oauth") || decrypt(localStorage.getItem("tT_oauth") || "")[0];
-			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ";
+			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ,DRJ(2),DRJ(3)";
 			
 			bot.checked			= url.searchParams.has("bot") ? true : true;
 			dun.checked			= url.searchParams.has("dun") ? true : true;
