@@ -23,5 +23,5 @@ Run without download from here: <https://valen-h.github.io/RavenFall-Bot/ravenbo
 
 ### Misc
 
-> The use of D(!dungeon), R(!r) allow the player to enter dungeons/raids only after other people have entered instead of going solo.
+> The use of D(!dungeon), R(!r) allow the player to enter dungeons/raids only after other people have entered instead of going solo.  
 > If you change any settings you need to re-submit.
