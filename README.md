@@ -2,7 +2,7 @@
 
 A bot for a Twitch game called Ravenfall.  
   
-Run without download frome here: <https://valen-h.github.io/RavenFall-Bot/ravenbot.html>  
+Run without download from here: <https://valen-h.github.io/RavenFall-Bot/ravenbot.html>  
 
 ## Settings
 
