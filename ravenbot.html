@@ -279,10 +279,10 @@
 						const	chn		= '#' + ch,
 								clr		= [130, 130, 130],
 								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
-								hasD	= xtrctp(setting[i], 'D'),
-								hasR	= xtrctp(setting[i], 'R'),
-								aliasD	= new RegExp(hasD || "Type !dungeon to join\\.$", "i"),
-								aliasR	= new RegExp(hasR || "help fight him by typing !raid", "i");
+								hasD	= (xtrctp(setting[i], 'D') || "").split(/(?<!\\)\|/gmi),
+								hasR	= (xtrctp(setting[i], 'R') || "").split(/(?<!\\)\|/gmi),
+								aliasD	= new RegExp(hasD[0] || "Type !dungeon to join\\.$", "i"),
+								aliasR	= new RegExp(hasR[0] || "help fight him by typing !raid", "i");
 						
 						let a, last, coolD = Date.now() - 10000, coolR = Date.now() - 10000;
 						
@@ -294,25 +294,25 @@
 							message.message	= message.message.trim();
 							
 							//if (message.username.trim().toLowerCase() == names[i]) {
-								if ((message.username.trim().toLowerCase() == names[i] || hasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message) && Date.now() - coolD > 15000) {
+								if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasD.length) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message) && Date.now() - coolD > 15000) {
 									//DUNGEONS
 									
 									coolD = Date.now();
 									setTimeout(() => {
-										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
+										t.chat.say(chn, last = hasD[1] || "!dungeon").then(() => _log(chn, "Sent", `'${hasD[1] || "!dungeon"}'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
-									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if ((message.username.trim().toLowerCase() == names[i] || hasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 15000) {
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+								} else if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasR.length) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 15000) {
 									//RAIDS
 									
 									coolR = Date.now();
 									setTimeout(() => {
-										t.chat.say(chn, last = "!raid").then(() => _log(chn, "Sent", `'!raid'  [after ${a}]`));
+										t.chat.say(chn, last = hasR[1] || "!raid").then(() => _log(chn, "Sent", `'${hasR[1] || "!raid"}'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
-									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (message.username.trim().toLowerCase() == names[i] && bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+								} else if (message.username.trim().toLowerCase() == names[i].trim().toLowerCase() && bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
 									//JOINS
 									
 									const	sh	= xtrctp(setting[i], 'J');
@@ -331,8 +331,8 @@
 										});
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
-									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (message.message.toLowerCase().includes(name.toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
 							//} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
 					});
