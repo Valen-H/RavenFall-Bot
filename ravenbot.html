@@ -92,6 +92,7 @@
 			grid-auto-flow: row;
 			margin: 5px;
 			padding: 5px;
+			scrollbar-gutter: stable;
 		}
 		
 		.entry {
@@ -278,8 +279,10 @@
 						const	chn		= '#' + ch,
 								clr		= [130, 130, 130],
 								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
-								aliasD	= new RegExp(xtrctp(settings[i], 'D') || "Type !dungeon to join\\.$", "i"),
-								aliasR	= new RegExp(xtrctp(settings[i], 'R') || "help fight him by typing !raid", "i");
+								hasD	= xtrctp(settings[i], 'D'),
+								hasR	= xtrctp(settings[i], 'R')
+								aliasD	= new RegExp(hasD || "Type !dungeon to join\\.$", "i"),
+								aliasR	= new RegExp(hasR || "help fight him by typing !raid", "i");
 						
 						let a, last;
 						
@@ -291,7 +294,7 @@
 							message.message	= message.message.trim();
 							
 							//if (message.username.trim().toLowerCase() == names[i]) {
-								if ((message.username.trim().toLowerCase() == names[i] || aliasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message)) {
+								if ((message.username.trim().toLowerCase() == names[i] || hasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message)) {
 									//DUNGEONS
 									
 									setTimeout(() => {
@@ -299,7 +302,7 @@
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if ((message.username.trim().toLowerCase() == names[i] || aliasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message)) {
+								} else if ((message.username.trim().toLowerCase() == names[i] || hasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message)) {
 									//RAIDS
 									
 									setTimeout(() => {
@@ -366,7 +369,7 @@
 			
 			return from;
 		} //parseBotnames
-		function parseSettings(from = settings ? settings.value : "", supply, splitr = ',') {
+		function parseSettings(from = settings ? settings.value : "", supply, splitr = /(?<!\\),/gmi) {
 			const nec	= supply || parseChannel();
 			let actv	= null;
 			
@@ -411,7 +414,7 @@
 		} //register*/
 		
 		function xtrctp(string, key) {
-			return ((string || "").match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0] || null;
+			return ((string || "").match(new RegExp("(?<=" + key + "\\()(.*?)(?=\\))", "i")) || [ ])[0] || null;
 		} //xtrctp
 		
 		function encrypt(key = oauth ? oauth.value : "", by = localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF)) {
