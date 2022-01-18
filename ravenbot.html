@@ -330,7 +330,7 @@
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (message.message.toLowerCase().includes(name.toLowerCase()) || message.username.trim().toLowerCase() == names[i]) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+								} else if (message.message.toLowerCase().includes(name.toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 							//} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
 					});
