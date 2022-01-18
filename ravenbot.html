@@ -279,8 +279,8 @@
 						const	chn		= '#' + ch,
 								clr		= [130, 130, 130],
 								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
-								hasD	= xtrctp(settings[i], 'D'),
-								hasR	= xtrctp(settings[i], 'R')
+								hasD	= xtrctp(setting[i], 'D'),
+								hasR	= xtrctp(setting[i], 'R')
 								aliasD	= new RegExp(hasD || "Type !dungeon to join\\.$", "i"),
 								aliasR	= new RegExp(hasR || "help fight him by typing !raid", "i");
 						
@@ -351,10 +351,10 @@
 			});
 		} //filterE
 		
-		function parseChannel(from = channels ? channels.value : "", splitr = ',') {
+		function parseChannel(from = channels ? channels.value : "", splitr = /(?<!\\),/gmi) {
 			return filterE(from.split(splitr).filter(v => v).map(v => v.trim().toLowerCase()));
 		} //parseChannel
-		function parseBotnames(from = botnames ? botnames.value : "", supply, splitr = ',') {
+		function parseBotnames(from = botnames ? botnames.value : "", supply, splitr = /(?<!\\),/gmi) {
 			const nec	= supply || parseChannel();
 			let actv	= null;
 			
