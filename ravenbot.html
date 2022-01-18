@@ -16,20 +16,7 @@
 			border-radius: 5px;
 			user-select: text;
 		}
-		input {
-			user-select: contain !important;
-		}
-		input:invalid {
-			border-color: red;
-		}
-		label {
-			display: contents;
-			text-decoration: underline;
-			float: left;
-		}
-		label::after {
-			content: ": ";
-		}
+		
 		#body, body {
 			position: absolute;
 			top: 0;
@@ -61,12 +48,14 @@
 			font-family: Papyrus, cursive, initial;
 			-webkit-font-smoothing: auto;
 		}
+		/*
 		#channel, #botname, #settings {
-			width: 50%;
+			width: 80%;
 		}
 		#oauth {
 			width: 35%;
 		}
+		*/
 		#logs {
 			width: 85%;
 			height: 45%;
@@ -91,7 +80,20 @@
 			-webkit-background-clip: text;
 			-webkit-text-fill-color: transparent;
 			cursor: default;
+			max-height: 5vh;
 		}
+		
+		#body > fieldset {
+			display: grid;
+			grid-template: auto / 1fr 5fr;
+			gap: 5px 5px;
+			place-items: stretch;
+			place-content: space-around;
+			grid-auto-flow: row;
+			margin: 5px;
+			padding: 5px;
+		}
+		
 		.entry {
 			width: 100%;
 			margin: 3px;
@@ -116,6 +118,7 @@
 			float: inline-start;
 			min-width: 20%;
 		}
+		
 		input {
 			transition-duration: 200ms;
 		}
@@ -134,6 +137,24 @@
 		input:focus {
 			background-color: gray;
 		}
+		input {
+			user-select: contain !important;
+		}
+		input:invalid {
+			border-color: red;
+		}
+		label {
+			display: contents;
+			text-decoration: underline;
+			float: left;
+		}
+		label[title] {
+			cursor: help;
+		}
+		label::after {
+			content: ": ";
+		}
+		
 		::-webkit-scrollbar {
 			width: 10px;
 			border-radius: 5px;
@@ -153,7 +174,7 @@
 		let	channels,	username,	oauth,
 			botnames,	commit,		logs,
 			bot,		dun,		raid,
-			settings,	join,
+			settings,	join,		self,
 			t,			chc = { };
 		
 		const	url	= new URL(location.href);
@@ -254,9 +275,11 @@
 					t.chat.join(ch).then(state => {
 						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
 						
-						const	chn	= '#' + ch,
-								clr	= [130, 130, 130],
-								c	= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')';
+						const	chn		= '#' + ch,
+								clr		= [130, 130, 130],
+								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
+								aliasD	= new RegExp(xtrctp(settings[i], 'D') || "Type !dungeon to join\\.$", "i"),
+								aliasR	= new RegExp(xtrctp(settings[i], 'R') || "help fight him by typing !raid", "i");
 						
 						let a, last;
 						
@@ -265,10 +288,10 @@
 						t.chat.on(chn, message => {
 							if (!message.message) return false;
 							
-							message.message = message.message.trim();
+							message.message	= message.message.trim();
 							
-							if (message.username.trim().toLowerCase() == names[i]) {
-								if (bot.checked && dun.checked && setting[i].includes('D') && /Type !dungeon to join\.$/i.test(message.message)) {
+							//if (message.username.trim().toLowerCase() == names[i]) {
+								if ((message.username.trim().toLowerCase() == names[i] || aliasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message)) {
 									//DUNGEONS
 									
 									setTimeout(() => {
@@ -276,7 +299,7 @@
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (bot.checked && raid.checked && setting[i].includes('R') && /help fight him by typing !raid/i.test(message.message)) {
+								} else if ((message.username.trim().toLowerCase() == names[i] || aliasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message)) {
 									//RAIDS
 									
 									setTimeout(() => {
@@ -284,7 +307,7 @@
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
+								} else if (message.username.trim().toLowerCase() == names[i]&& bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
 									//JOINS
 									
 									const	sh	= xtrctp(setting[i], 'J');
@@ -304,8 +327,8 @@
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if (message.message.includes(name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
-							} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+								} else if (message.message.toLowerCase().includes(name.toLowerCase())) _log(chn, "Got", `${message.message}  [in ${chn}]`);
+							//} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
 					});
 				});
@@ -360,6 +383,7 @@
 		} //parseSettings
 		
 		function refresh(chans = channels ? channels.value : "", botns = botnames ? botnames.value : "", sets = settings ? settings.value : "", splitr = ',') {
+			console.log(chans, botns, sets, splitr);
 			/*chans	= parseChannel();
 			botns	= parseBotnames(botns, chans);
 			
@@ -387,7 +411,7 @@
 		} //register*/
 		
 		function xtrctp(string, key) {
-			return (string.match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0];
+			return ((string || "").match(new RegExp("(?<=" + key + "\\()([^\((]+?)(?=\\))", "i")) || [ ])[0] || null;
 		} //xtrctp
 		
 		function encrypt(key = oauth ? oauth.value : "", by = localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF)) {
@@ -441,6 +465,7 @@
 			settings	= document.getElementById("settings");
 			join		= document.getElementById("join_enabled");
 			raid		= document.getElementById("raid_enabled");
+			//self		= document.getElementById("orig_enabled");
 			
 			commit.onclick		= _commit;
 			
@@ -451,10 +476,11 @@
 			oauth.value			= url.searchParams.get("oauth") || decrypt(localStorage.getItem("tT_oauth") || "")[0];
 			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ,DRJ(2),DRJ(3)";
 			
-			bot.checked			= url.searchParams.has("bot") ? true : true;
-			dun.checked			= url.searchParams.has("dun") ? true : true;
-			raid.checked		= url.searchParams.has("raid") ? true : true;
-			join.checked		= url.searchParams.has("join") ? true : true;
+			bot.checked			= url.searchParams.has("bot") ? url.searchParams.get("bot") : bot.checked;
+			dun.checked			= url.searchParams.has("dun") ? url.searchParams.get("dun") : dun.checked;
+			raid.checked		= url.searchParams.has("raid") ? url.searchParams.get("raid") : raid.checked;
+			join.checked		= url.searchParams.has("join") ? url.searchParams.get("join") : join.checked;
+			//self.checked		= url.searchParams.has("self") ? url.searchParams.get("self") : self.checked;
 			
 			if (url.searchParams.has("start")) commit.click();
 			
@@ -468,33 +494,32 @@
 		<h1 id="title">RavenBot</h1>
 		<fieldset>
 			<legend>Authorization</legend>
-			<label for="username">Username</label>
+			<span><label for="username">Username</label></span>
 			<input type="text" id="username" title="You Account Username" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Your Username" minlength="1" tabindex="1" autocomplete="nickname" required />
-			<br />
 			<a href="https://twitchapps.com/tmi/" target="_blank"><label for="oauth">OAuth</label></a>
 			<input type="password" id="oauth" title="https://twitchapps.com/tmi/" pattern="(oauth:)?[a-zA-Z0-9]+" placeholder="OAuth Token" minlength="5" tabindex="2" autocomplete="additional-name" required />
 		</fieldset>
 		<fieldset>
 			<legend>Settings</legend>
-			<label for="channel">Channel(s)</label>
-			<input type="text" id="channel" title="Separate with Commas" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Channel Names" minlength="1" tabindex="3" autocomplete="username" autofocus />
-			<br />
-			<label for="botname">Bot Name(s)</label>
-			<input type="text" id="botname" title="Separate with Commas (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
-			<br />
-			<label for="settings">Per-Channel Settings</label>
-			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" pattern="[A-Z0-9\(\),]+" placeholder="DRJ  [= Dungeons enabled + Raids enabled + AutoJoin Enabled]" minlength="1" tabindex="5" autocomplete="language" />
+			<span><label for="channel" title="Separate with Commas">Channel(s)</label></span>
+			<input type="text" id="channel" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Channel Names" minlength="1" tabindex="3" autocomplete="username" autofocus />
+			<span><label for="botname" title="Separate with Commas in order of channels (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)">Bot Name(s)</label></span>
+			<input type="text" id="botname" title="Separate with Commas in order of channels (name1,,name2,, is equal to name1,name1,name2,name2,name2,name2 when 6 channels are given)" pattern="[a-zA-Z0-9_\-\.\(\)\[\]\{\},]+" placeholder="Bot Names" minlength="1" tabindex="4" autocomplete="nickname" />
+			<span><label for="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)">Per-Channel Settings*</label></span>
+			<input type="text" id="settings" title="Separate with Commas (opt1,,opt2,, is equal to opt1,opt1,opt2,opt2,opt2,opt2 when 6 channels are given)" placeholder="DRJ  [= Dungeons enabled + Raids enabled + AutoJoin Enabled]  -  D(!d)R(!r)J(1)  [respond to non-bot custom messages (!d/!r) and join as character 1]" minlength="1" tabindex="5" autocomplete="language" />
 		</fieldset>
 		<input type="submit" id="commit" title="Login and get Ready" tabindex="6" />
 		<br />
-		<label for="b_enabled">Bot Enabled</label>
+		<label for="b_enabled" title="Enable Bot Actions.">Bot Enabled</label>
 		<input type="checkbox" id="b_enabled" title="Enable Bot Actions." tabindex="7" checked />
-		<label for="join_enabled">AutoJoin Enabled</label>
+		<label for="join_enabled" title="Enable Channel Joining.">AutoJoin Enabled</label>
 		<input type="checkbox" id="join_enabled" title="Enable Channel Joining." tabindex="8" checked />
-		<label for="dun_enabled">Dungeons Enabled</label>
+		<label for="dun_enabled" title="Enable Dungeon Actions.">Dungeons Enabled</label>
 		<input type="checkbox" id="dun_enabled" title="Enable Dungeon Actions." tabindex="9" checked />
-		<label for="raid_enabled">Raids Enabled</label>
+		<label for="raid_enabled" title="Enable Raid Actions.">Raids Enabled</label>
 		<input type="checkbox" id="raid_enabled" title="Enable Raid Actions." tabindex="10" checked />
+		<!-- <label for="orig_enabled"  title="If unchecked responds only to people joining raids and dungeons instead.">Listen only Bot</label>
+		<input type="checkbox" id="orig_enabled" title="If unchecked responds only to people joining raids and dungeons instead." tabindex="11" checked /> -->
 		<br />
 		<div id="logs"></div>
 	</main>
