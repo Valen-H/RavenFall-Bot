@@ -284,7 +284,7 @@
 								aliasD	= new RegExp(hasD || "Type !dungeon to join\\.$", "i"),
 								aliasR	= new RegExp(hasR || "help fight him by typing !raid", "i");
 						
-						let a, last;
+						let a, last, coolD = Date.now() - 10000, coolR = Date.now() - 10000;
 						
 						chc[chn] = c;
 						
@@ -294,17 +294,19 @@
 							message.message	= message.message.trim();
 							
 							//if (message.username.trim().toLowerCase() == names[i]) {
-								if ((message.username.trim().toLowerCase() == names[i] || hasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message)) {
+								if ((message.username.trim().toLowerCase() == names[i] || hasD) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message) && Date.now() - coolD > 15000) {
 									//DUNGEONS
 									
+									coolD = Date.now();
 									setTimeout(() => {
 										t.chat.say(chn, last = "!dungeon").then(() => _log(chn, "Sent", `'!dungeon'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
 									
 									_log(chn, "Received", `${message.message}  [replies after ${a}]`);
-								} else if ((message.username.trim().toLowerCase() == names[i] || hasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message)) {
+								} else if ((message.username.trim().toLowerCase() == names[i] || hasR) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 15000) {
 									//RAIDS
 									
+									coolR = Date.now();
 									setTimeout(() => {
 										t.chat.say(chn, last = "!raid").then(() => _log(chn, "Sent", `'!raid'  [after ${a}]`));
 									}, a = 8000 + Math.round(Math.random() * 8000));
