@@ -107,6 +107,7 @@
 			display: inline-block;
 			box-sizing: border-box;
 			box-shadow: 1px 1px 1px 1px gray;
+			text-shadow: 1px 1px 1px lightgray;
 			clear: both;
 		}
 		.entrychan {
@@ -281,7 +282,7 @@
 				chs.forEach((ch, i) => {
 					t.chat.join(ch).then(state => {
 						const	chn		= '#' + ch,
-								clr		= [130, 130, 130],
+								clr		= [150, 150, 150],
 								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
 								hasD	= (xtrctp(setting[i], 'D') || "").split(/(?<!\\)\|/gmi),
 								hasR	= (xtrctp(setting[i], 'R') || "").split(/(?<!\\)\|/gmi),
@@ -515,7 +516,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
-		<small><h6 id="upd" data-last="1642803027733"><u>Last Update</u>:&nbsp;</h6></small>
+		<small><h6 id="upd" data-last="1642803530073"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
