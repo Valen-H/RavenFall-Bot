@@ -126,6 +126,9 @@
 			float: inline-start;
 			min-width: 20%;
 		}
+		.chann {
+			color: inherit;
+		}
 		
 		input {
 			transition-duration: 200ms;
@@ -198,7 +201,7 @@
 			if (room) {
 				const	rom		= document.createElement("span");
 				
-				rom.textContent			= room + ":\t";
+				rom.innerHTML			= `<a target="blank" class="chann" href="https://twitch.tv/${room.slice(1)}">${room}</a>` + ":\t";
 				rom.style.fontWeight	= "bold";
 				rom.classList.add("entrychan");
 				nen.style.color			= chc[room];
@@ -516,7 +519,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
-		<small><h6 id="upd" data-last="1642803530073"><u>Last Update</u>:&nbsp;</h6></small>
+		<small><h6 id="upd" data-last="1642803894674"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
