@@ -82,6 +82,11 @@
 			cursor: default;
 			max-height: 5vh;
 		}
+		#upd {
+			transform: scale(90%);
+			color: rgba(100, 100, 100, .7);
+			opacity: .9;
+		}
 		
 		#body > fieldset {
 			display: grid;
@@ -476,6 +481,8 @@
 			raid		= document.getElementById("raid_enabled");
 			//self		= document.getElementById("orig_enabled");
 			
+			if (!(channels && username && botnames && oauth && commit && logs && bot && dun && settings && join && raid)) location.reload();
+			
 			commit.onclick		= _commit;
 			
 			localStorage.setItem("Tt_enckey", localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF));
@@ -493,6 +500,12 @@
 			
 			if (url.searchParams.has("start")) commit.click();
 			
+			const	upd	= document.getElementById("upd");
+			
+			if (upd)
+				upd.innerText	+= new Date(Number(upd.getAttribute("data-last")));
+			else location.reload();
+			
 			_log(null, null, "\nHit '__Submit__' to Login and Start.");
 			logs.prepend(document.createElement("hr"));
 		});
@@ -501,6 +514,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
+		<small><h6 id="upd" data-last="1642801724405"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
