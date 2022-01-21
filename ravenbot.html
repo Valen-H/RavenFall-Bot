@@ -292,7 +292,7 @@
 						
 						chc[chn] = c;
 						
-						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
+						_log(chn, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
 						
 						t.chat.on(chn, message => {
 							if (!message.message) return false;
