@@ -294,24 +294,24 @@
 							message.message	= message.message.trim();
 							
 							//if (message.username.trim().toLowerCase() == names[i]) {
-								if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasD.length) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message) && Date.now() - coolD > 15000) {
+								if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasD.length) && bot.checked && dun.checked && setting[i].includes('D') && aliasD.test(message.message) && Date.now() - coolD > 10000) {
 									//DUNGEONS
 									
 									coolD = Date.now();
 									setTimeout(() => {
 										if (!(bot.checked && dun.checked)) return;
 										t.chat.say(chn, last = hasD[1] || "!dungeon").then(() => _log(chn, "Sent", `'${hasD[1] || "!dungeon"}'  [after ${a}]`));
-									}, a = 8000 + Math.round(Math.random() * 8000));
+									}, a = 5000 + Math.round(Math.random() * 5000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
-								} else if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasR.length) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 15000) {
+								} else if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasR.length) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 10000) {
 									//RAIDS
 									
 									coolR = Date.now();
 									setTimeout(() => {
 										if (!(bot.checked && raid.checked)) return;
 										t.chat.say(chn, last = hasR[1] || "!raid").then(() => _log(chn, "Sent", `'${hasR[1] || "!raid"}'  [after ${a}]`));
-									}, a = 8000 + Math.round(Math.random() * 8000));
+									}, a = 5000 + Math.round(Math.random() * 5000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
 								} else if (message.username.trim().toLowerCase() == names[i].trim().toLowerCase() && bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
@@ -329,11 +329,11 @@
 											setTimeout(() => {
 												if (!(bot.checked && join.checked)) return;
 												t.chat.say(chn, last).then(() => _log(chn, "Sent", `'${last}'  [after ${a}]`));
-											}, a = 8000 + Math.round(Math.random() * 8000));
+											}, a = 5000 + Math.round(Math.random() * 5000));
 											
 											_log(chn, "Retrying", `'${last}'  [replies after ${a}]`);
 										});
-									}, a = 8000 + Math.round(Math.random() * 8000));
+									}, a = 5000 + Math.round(Math.random() * 5000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
 								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
