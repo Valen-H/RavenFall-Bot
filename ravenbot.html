@@ -280,8 +280,6 @@
 				
 				chs.forEach((ch, i) => {
 					t.chat.join(ch).then(state => {
-						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
-						
 						const	chn		= '#' + ch,
 								clr		= [130, 130, 130],
 								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
@@ -293,6 +291,8 @@
 						let a, last, coolD = Date.now() - 10000, coolR = Date.now() - 10000;
 						
 						chc[chn] = c;
+						
+						_log(ch, "Joined", `<${state.roomState.roomId}>	as	<${state.userState.displayName}>	listening to	<${names[i]}>`);
 						
 						t.chat.on(chn, message => {
 							if (!message.message) return false;
