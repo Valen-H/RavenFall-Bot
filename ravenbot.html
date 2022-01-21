@@ -128,6 +128,10 @@
 		}
 		.chann {
 			color: inherit;
+			text-decoration-style: dashed;
+		}
+		.chann:nth-child(2n) {
+			text-decoration-style: wavy;
 		}
 		
 		input {
@@ -186,7 +190,7 @@
 			botnames,	commit,		logs,
 			bot,		dun,		raid,
 			settings,	join,		self,
-			t,			chc = { };
+			all,		t,			chc = { };
 		
 		const	url	= new URL(location.href);
 		
@@ -346,7 +350,7 @@
 									}, a = 5000 + Math.round(Math.random() * 5000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies ${sh ? "!join " + sh : "!join"} after ${a}]`);
-								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
+								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase()) || (message.username.trim().toLowerCase() == names[i] && all.checked)) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
 							//} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
 					});
@@ -484,24 +488,26 @@
 			settings	= document.getElementById("settings");
 			join		= document.getElementById("join_enabled");
 			raid		= document.getElementById("raid_enabled");
+			all			= document.getElementById("show_all");
 			//self		= document.getElementById("orig_enabled");
 			
-			if (!(channels && username && botnames && oauth && commit && logs && bot && dun && settings && join && raid)) location.reload();
+			if (!(channels && username && botnames && oauth && commit && logs && bot && dun && settings && join && raid && all)) location.reload();
 			
 			commit.onclick		= _commit;
 			
 			localStorage.setItem("Tt_enckey", localStorage.getItem("Tt_enckey") || Math.round(Math.random() * 0xFFFF));
-			channels.value		= url.searchParams.get("channel") || localStorage.getItem("tT_channel");
-			botnames.value		= url.searchParams.get("botnames") || localStorage.getItem("tT_botnames") || "RavenfallOfficial";
-			username.value		= url.searchParams.get("username") || localStorage.getItem("tT_username");
-			oauth.value			= url.searchParams.get("oauth") || decrypt(localStorage.getItem("tT_oauth") || "")[0];
-			settings.value		= url.searchParams.get("settings") || localStorage.getItem("tT_settings") || "DRJ,DRJ(2),DRJ(3)";
+			channels.value		= url.searchParams.get("channel")	|| localStorage.getItem("tT_channel");
+			botnames.value		= url.searchParams.get("botnames")	|| localStorage.getItem("tT_botnames") || "RavenfallOfficial";
+			username.value		= url.searchParams.get("username")	|| localStorage.getItem("tT_username");
+			oauth.value			= url.searchParams.get("oauth")		|| decrypt(localStorage.getItem("tT_oauth") || "")[0];
+			settings.value		= url.searchParams.get("settings")	|| localStorage.getItem("tT_settings") || "DRJ,DRJ(2),DRJ(3)";
 			
-			bot.checked			= url.searchParams.has("bot") ? url.searchParams.get("bot") : bot.checked;
-			dun.checked			= url.searchParams.has("dun") ? url.searchParams.get("dun") : dun.checked;
-			raid.checked		= url.searchParams.has("raid") ? url.searchParams.get("raid") : raid.checked;
-			join.checked		= url.searchParams.has("join") ? url.searchParams.get("join") : join.checked;
-			//self.checked		= url.searchParams.has("self") ? url.searchParams.get("self") : self.checked;
+			bot.checked			= url.searchParams.has("bot")	? url.searchParams.get("bot") : bot.checked;
+			dun.checked			= url.searchParams.has("dun")	? url.searchParams.get("dun") : dun.checked;
+			raid.checked		= url.searchParams.has("raid")	? url.searchParams.get("raid") : raid.checked;
+			join.checked		= url.searchParams.has("join")	? url.searchParams.get("join") : join.checked;
+			all.checked			= url.searchParams.has("all")	? url.searchParams.get("all") : all.checked;
+			//self.checked		= url.searchParams.has("self")	? url.searchParams.get("self") : self.checked;
 			
 			if (url.searchParams.has("start")) commit.click();
 			
@@ -519,7 +525,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
-		<small><h6 id="upd" data-last="1642803894674"><u>Last Update</u>:&nbsp;</h6></small>
+		<small><h6 id="upd" data-last="1642804500306"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
@@ -546,6 +552,8 @@
 		<input type="checkbox" id="dun_enabled" title="Enable Dungeon Actions." tabindex="9" checked />
 		<label for="raid_enabled" title="Enable Raid Actions.">Raids Enabled</label>
 		<input type="checkbox" id="raid_enabled" title="Enable Raid Actions." tabindex="10" checked />
+		<label for="show_all" title="Show all bot messages.">Show All</label>
+		<input type="checkbox" id="show_all" title="Show all bot messages." tabindex="11" />
 		<!-- <label for="orig_enabled"  title="If unchecked responds only to people joining raids and dungeons instead.">Listen only Bot</label>
 		<input type="checkbox" id="orig_enabled" title="If unchecked responds only to people joining raids and dungeons instead." tabindex="11" checked /> -->
 		<br />
