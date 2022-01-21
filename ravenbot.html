@@ -309,7 +309,7 @@
 										t.chat.say(chn, last = hasD[1] || "!dungeon").then(() => _log(chn, "Sent", `'${hasD[1] || "!dungeon"}'  [after ${a}]`));
 									}, a = 5000 + Math.round(Math.random() * 5000));
 									
-									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies '${hasD[1] || "!dungeon"}' after ${a}]`);
 								} else if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasR.length) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 10000) {
 									//RAIDS
 									
@@ -319,7 +319,7 @@
 										t.chat.say(chn, last = hasR[1] || "!raid").then(() => _log(chn, "Sent", `'${hasR[1] || "!raid"}'  [after ${a}]`));
 									}, a = 5000 + Math.round(Math.random() * 5000));
 									
-									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies '${hasR[1] || "!raid"}' after ${a}]`);
 								} else if (message.username.trim().toLowerCase() == names[i].trim().toLowerCase() && bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
 									//JOINS
 									
@@ -341,7 +341,7 @@
 										});
 									}, a = 5000 + Math.round(Math.random() * 5000));
 									
-									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies after ${a}]`);
+									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies ${sh ? "!join " + sh : "!join"} after ${a}]`);
 								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase())/* || message.username.trim().toLowerCase() == names[i]*/) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
 							//} else if (message.message.includes('@' + name)) _log(chn, "Got", `${message.message}  [in ${chn}]`);
 						});
@@ -515,7 +515,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
-		<small><h6 id="upd" data-last="1642801724405"><u>Last Update</u>:&nbsp;</h6></small>
+		<small><h6 id="upd" data-last="1642803027733"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
