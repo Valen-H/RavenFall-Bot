@@ -290,7 +290,7 @@
 					t.chat.join(ch).then(state => {
 						const	chn		= '#' + ch,
 								clr		= [150, 150, 150],
-								c		= "rgb(" + clr.map(c => Math.round(Math.random() * 100)).join(',') + ')',
+								c		= "rgb(" + clr.map(c => Math.round(/*c + */Math.random() * 100)).join(',') + ')',
 								hasD	= (xtrctp(setting[i], 'D') || "").split(/(?<!\\)\|/gmi),
 								hasR	= (xtrctp(setting[i], 'R') || "").split(/(?<!\\)\|/gmi),
 								aliasD	= new RegExp(hasD[0] || "Type !dungeon to join\\.$", "i"),
@@ -315,7 +315,7 @@
 									setTimeout(() => {
 										if (!(bot.checked && dun.checked)) return;
 										t.chat.say(chn, last = hasD[1] || "!dungeon").then(() => _log(chn, "Sent", `'${hasD[1] || "!dungeon"}'  [after ${a}]`));
-									}, a = 5000 + Math.round(Math.random() * 5000));
+									}, a = 3000 + Math.round(Math.random() * 3000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies '${hasD[1] || "!dungeon"}' after ${a}]`);
 								} else if ((message.username.trim().toLowerCase() == names[i].trim().toLowerCase() || hasR.length) && bot.checked && raid.checked && setting[i].includes('R') && aliasR.test(message.message) && Date.now() - coolR > 10000) {
@@ -325,7 +325,7 @@
 									setTimeout(() => {
 										if (!(bot.checked && raid.checked)) return;
 										t.chat.say(chn, last = hasR[1] || "!raid").then(() => _log(chn, "Sent", `'${hasR[1] || "!raid"}'  [after ${a}]`));
-									}, a = 5000 + Math.round(Math.random() * 5000));
+									}, a = 3000 + Math.round(Math.random() * 3000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies '${hasR[1] || "!raid"}' after ${a}]`);
 								} else if (message.username.trim().toLowerCase() == names[i].trim().toLowerCase() && bot.checked && join.checked && last && setting[i].includes('J') && joineed.test(message.message)) {
@@ -343,11 +343,11 @@
 											setTimeout(() => {
 												if (!(bot.checked && join.checked)) return;
 												t.chat.say(chn, last).then(() => _log(chn, "Sent", `'${last}'  [after ${a}]`));
-											}, a = 5000 + Math.round(Math.random() * 5000));
+											}, a = 3000 + Math.round(Math.random() * 3000));
 											
 											_log(chn, "Retrying", `'${last}'  [replies after ${a}]`);
 										});
-									}, a = 5000 + Math.round(Math.random() * 5000));
+									}, a = 3000 + Math.round(Math.random() * 3000));
 									
 									_log(chn, "Received", `__${message.username}__:\t${message.message}  [replies ${sh ? "!join " + sh : "!join"} after ${a}]`);
 								} else if (message.message.toLowerCase().includes(name.trim().toLowerCase()) || (message.username.trim().toLowerCase() == names[i] && all.checked)) _log(chn, "Got", `__${message.username}__:\t${message.message}  [in ${chn}]`);
@@ -525,7 +525,7 @@
 <body>
 	<main id="body">
 		<h1 id="title">RavenBot</h1>
-		<small><h6 id="upd" data-last="1642804500306"><u>Last Update</u>:&nbsp;</h6></small>
+		<small><h6 id="upd" data-last="1653300624712"><u>Last Update</u>:&nbsp;</h6></small>
 		<fieldset>
 			<legend>Authorization</legend>
 			<span><label for="username">Username</label></span>
